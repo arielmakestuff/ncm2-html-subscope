@@ -3,14 +3,25 @@ import re
 import logging
 import copy
 from ncm2 import Ncm2Base, getLogger
+import vim
 
 logger = getLogger(__name__)
 
 
+VIM_VAR_NAME = 'g:ncm2_html_subscope_scope'
+try:
+    SCOPE = vim.eval(VIM_VAR_NAME)
+except vim.error:
+    # Define default scope and set g:ncm2_html_subscope_scope to the default
+    # scope if the global variable doesn't exist
+    SCOPE = ['html', 'xhtml', 'php', 'blade', 'jinja',
+             'jinja2', 'vue.html.javascript.css', 'vue']
+    vim.command('let {} = {}'.format(VIM_VAR_NAME, SCOPE))
+
+
 class SubscopeDetector(Ncm2Base):
 
-    scope = ['html', 'xhtml', 'php', 'blade', 'jinja',
-             'jinja2', 'vue.html.javascript.css', 'vue']
+    scope = SCOPE
 
 #     def sub_context(self, ctx, src):
     def detect(self, lnum, ccol, src):
